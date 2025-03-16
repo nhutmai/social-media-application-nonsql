@@ -9,7 +9,7 @@ lý bài viết.
 
 1. Clone repository này về máy của bạn:
    ```bash
-   git clone https://github.com/yourusername/social-media-server.git
+   git clone https://github.com/nhutmai/social-media-application-nonsql.git
    ```
 
 2. Di chuyển vào thư mục dự án:
