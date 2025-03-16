@@ -1,12 +1,372 @@
-openapi: "3.1.0"
+openapi: 3.0.0
 info:
-  title: API Title
-  version: "1.0"
+  title: Post API
+  description: API quản lý bài viết
+  version: 1.0.0
+
 servers:
-  - url: https://api.server.test/v1
+  - url: http://localhost:3000/api/v1
+    description: Local server
+
+tags:
+  - name: Posts
+    description: API quản lý bài viết
+
 paths:
-  /test:
+  /posts:
     get:
+      tags:
+        - Posts
+      summary: Lấy danh sách bài viết
+      description: Lấy tất cả bài viết với phân trang và sắp xếp
+      parameters:
+        - name: page
+          in: query
+          description: Số trang (bắt đầu từ 1)
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Số lượng bài viết trên mỗi trang
+          schema:
+            type: integer
+            default: 10
+        - name: orderBy
+          in: query
+          description: Trường để sắp xếp (mặc định là createdAt)
+          schema:
+            type: string
+            default: "createdAt"
+        - name: sortBy
+          in: query
+          description: Kiểu sắp xếp (-1 là giảm dần, 1 là tăng dần)
+          schema:
+            type: integer
+            default: -1
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Thành công, trả về danh sách bài viết
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        #                  posts:
+        #                    type: array
+        #                    items:
+        #                      $ref: "#/components/schemas/Post"
+        "500":
+          description: Lỗi server
+
+    post:
+      tags:
+        - Posts
+      summary: Tạo bài viết mới
+      description: Tạo bài viết mới với tiêu đề, nội dung và ID người dùng
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Bài viết mới"
+                content:
+                  type: string
+                  example: "Nội dung bài viết"
+                userId:
+                  type: string
+                  example: "660a7b2c34a6d0bfa1e3c1a5"
+      responses:
+        "201":
+          description: Bài viết được tạo thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  post:
+                    $ref: "#/components/schemas/Post"
+        "500":
+          description: Lỗi server
+
+  /posts/{id}:
+    put:
+      tags:
+        - Posts
+      summary: Cập nhật bài viết
+      description: Cập nhật thông tin bài viết theo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID bài viết cần cập nhật
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Tiêu đề mới"
+                content:
+                  type: string
+                  example: "Nội dung mới"
+      responses:
+        "200":
+          description: Cập nhật bài viết thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        #                  post:
+        #                    $ref: "#/components/schemas/Post"
+        "500":
+          description: Lỗi server
+
+    delete:
+      tags:
+        - Posts
+      summary: Xóa bài viết
+      description: Xóa bài viết theo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID bài viết cần xóa
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Xóa bài viết thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        "500":
+          description: Lỗi server
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Lấy danh sách người dùng
+      description: Lấy tất cả người dùng với phân trang và sắp xếp
+      parameters:
+        - name: page
+          in: query
+          description: Số trang (bắt đầu từ 1)
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Số lượng người dùng trên mỗi trang
+          schema:
+            type: integer
+            default: 10
+        - name: orderBy
+          in: query
+          description: Trường để sắp xếp (mặc định là createdAt)
+          schema:
+            type: string
+            default: "createdAt"
+        - name: sortBy
+          in: query
+          description: Kiểu sắp xếp (-1 là giảm dần, 1 là tăng dần)
+          schema:
+            type: integer
+            default: -1
+      responses:
+        "200":
+          description: Thành công, trả về danh sách người dùng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        #                  users:
+        #                    type: array
+        #                    items:
+        #                      $ref: "#/components/schemas/User"
+        "500":
+          description: Lỗi server
+    post:
+      tags:
+        - Users
+      summary: Tạo người dùng mới
+      description: Tạo người dùng mới với email và tên
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "example@email.com"
+                name:
+                  type: string
+                  example: "Nguyễn Văn A"
+      responses:
+        "201":
+          description: Người dùng được tạo thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        #                  user:
+        #                    $ref: "#/components/schemas/User"
+        "500":
+          description: Lỗi server
+
+  /users/{id}:
+    put:
+      tags:
+        - Users
+      summary: Cập nhật người dùng
+      description: Cập nhật thông tin người dùng theo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID người dùng cần cập nhật
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "newemail@email.com"
+                name:
+                  type: string
+                  example: "Nguyễn Văn B"
+      responses:
+        "200":
+          description: Cập nhật người dùng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        #                  user:
+        #                    $ref: "#/components/schemas/User"
+        "500":
+          description: Lỗi server
+
+    delete:
+      tags:
+        - Users
+      summary: Xóa người dùng
+      description: Xóa người dùng theo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID người dùng cần xóa
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Xóa người dùng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        "500":
+          description: Lỗi server
+
+#components:
+#  schemas:
+#    Post:
+#      type: object
+#      properties:
+#        id:
+#          type: string
+#          example: "660a7b2c34a6d0bfa1e3c1a5"
+#        title:
+#          type: string
+#          example: "Bài viết hay"
+#        content:
+#          type: string
+#          example: "Nội dung của bài viết này"
+#        user:
+#          type: object
+#          properties:
+#            id:
+#              type: string
+#              example: "660a7b2c34a6d0bfa1e3c1a5"
+#            name:
+#              type: string
+#              example: "Nguyễn Văn A"
+#        createdAt:
+#          type: string
+#          format: date-time
+#          example: "2024-03-15T12:34:56Z"
+#        updatedAt:
+#          type: string
+#          format: date-time
+#          example: "2024-03-15T12:34:56Z"
+#
+#    User:
+#      type: object
+#      properties:
+#        id:
+#          type: string
+#          example: "660a7b2c34a6d0bfa1e3c1a5"
+#        email:
+#          type: string
+#          example: "example@email.com"
+#        name:
+#          type: string
+#          example: "Nguyễn Văn A"
+#        posts:
+#          type: array
+#          items:
+#            $ref: "#/components/schemas/Post"
+#        createdAt:
+#          type: string
+#          format: date-time
+#          example: "2024-03-15T12:34:56Z"
+#        updatedAt:
+#          type: string
+#          format: date-time
+#          example: "2024-03-15T12:34:56Z"
+#

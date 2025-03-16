@@ -1,18 +1,22 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const dbConnection = require("./config/database/mongo.connect.js");
-const router = require("./routes/index.router.js");
 
-dotenv.config();
+const routes = require('./routes/index.router');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const path = require('path');
 const app = express();
-const PORT = process.env.PORT || 5000;
+require('dotenv').config();
+const PORT = process.env.PORT;
+const swaggerDocument = YAML.load(path.join(__dirname, './docs/swagger.yaml'));
 
-dbConnection;
-
+// innit database
+require('./config/database/mongo.connect');
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-app.use("/api/v1", router);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/v1', routes);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
+app.listen(process.env.PORT, () => {
+    console.log(`http://localhost:${PORT}`);
 });

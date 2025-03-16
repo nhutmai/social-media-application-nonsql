@@ -4,6 +4,6 @@ package-lock.json
 
 # IDE files
 .idea/
-.DS_Store
+.DS_Store/
 
 .env
